@@ -55,13 +55,13 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.reward_type = "sparse"
         self.control_type = "ee" # we only control where the ee is at.
         self.init_pos = {
-            'joint0': 0.0,
             'joint1': 0.0,
             'joint2': 0.0,
-            'joint3': -1.5,
-            'joint4': 0.0,
-            'joint5': 1.5,
-            'joint6': 0.0,
+            'joint3': 0.0,
+            'joint4': -1.57079632679,
+            'joint5': 0.0,
+            'joint6': 1.57079632679,
+            'joint7': 0.785398163397,
         }
         self.n_substeps = 20
         self.gripper_extra_height = 0.2
@@ -121,7 +121,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         ee_displacement = action[:3]
         rot_ctrl = [1., 0., 1., 0.]
         action = np.concatenate([ee_displacement, rot_ctrl])
-        self.set_trajectory_ee(action) # apply action to simulation.
+        self.set_trajectory_ee(action) # Q: does this apply action to simulation???
 
     def _get_obs(self):
         """

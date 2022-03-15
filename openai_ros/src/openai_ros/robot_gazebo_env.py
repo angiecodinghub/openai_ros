@@ -14,7 +14,7 @@ class RobotGazeboEnv(gym.Env):
         # To reset Simulations
         rospy.logdebug("START init RobotGazeboEnv")
         self.gazebo = GazeboConnection(start_init_physics_parameters,reset_world_or_sim)
-        self.controllers_object = ControllersConnection(namespace=robot_name_space, controllers_list=controllers_list)
+        self.controllers_object = ControllersConnection(namespace = robot_name_space, controllers_list = controllers_list) ### set controller and namespace here.
         self.reset_controls = reset_controls
         self.seed()
 
@@ -45,7 +45,7 @@ class RobotGazeboEnv(gym.Env):
         rospy.logdebug("START STEP OpenAIROS")
 
         self.gazebo.unpauseSim()
-        self._set_action(action)
+        self._set_action(action) #### Q: will this change the simulator's pose?
         self.gazebo.pauseSim()
         obs = self._get_obs()
         done = self._is_done(obs)

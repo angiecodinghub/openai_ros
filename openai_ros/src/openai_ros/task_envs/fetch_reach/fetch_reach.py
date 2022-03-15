@@ -70,13 +70,13 @@ class FetchReachEnv(fetch_env_v2.FetchEnv, utils.EzPickle):
         self.distance_threshold = 0.05
         self.reward_type = "sparse"
         self.init_pos = {
-            'joint0': 0.0,
             'joint1': 0.0,
             'joint2': 0.0,
-            'joint3': -1.5,
-            'joint4': 0.0,
-            'joint5': 1.5,
-            'joint6': 0.0,
+            'joint3': 0.0,
+            'joint4': -1.5,
+            'joint5': 0.0,
+            'joint6': 1.5,
+            'joint7': 0.0,
         }
         
     def _set_action(self, action):

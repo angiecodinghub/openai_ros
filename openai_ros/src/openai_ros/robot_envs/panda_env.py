@@ -21,9 +21,9 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         # Variables that we give through the constructor.
 
         # Internal Vars
-        self.controllers_list = []
+        self.controllers_list = ["/franka_state_controller"]
 
-        self.robot_name_space = ""
+        self.robot_name_space = "" # not sure
 
         self.reset_controls = False
         
@@ -44,7 +44,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         
         self.gazebo.unpauseSim()
         self._check_all_systems_ready()
-        
+
         self.joint_states_sub = rospy.Subscriber(self.JOINT_STATES_SUBSCRIBER, JointState, self.joints_callback)
         self.joints = JointState()
         
@@ -120,13 +120,13 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
     def set_trajectory_joints(self, initial_qpos):
 
         positions_array = [None] * 7
-        positions_array[0] = initial_qpos["joint0"]
-        positions_array[1] = initial_qpos["joint1"]
-        positions_array[2] = initial_qpos["joint2"]
-        positions_array[3] = initial_qpos["joint3"]
-        positions_array[4] = initial_qpos["joint4"]
-        positions_array[5] = initial_qpos["joint5"]
-        positions_array[6] = initial_qpos["joint6"]
+        positions_array[0] = initial_qpos["joint1"]
+        positions_array[1] = initial_qpos["joint2"]
+        positions_array[2] = initial_qpos["joint3"]
+        positions_array[3] = initial_qpos["joint4"]
+        positions_array[4] = initial_qpos["joint5"]
+        positions_array[5] = initial_qpos["joint6"]
+        positions_array[6] = initial_qpos["joint7"]
  
         self.move_fetch_object.joint_traj(positions_array)
         
@@ -147,13 +147,13 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         """
         Based on the Order of the positions, they will be assigned to its joint name
         names_in_order:
-          joint0: 0.0
-          joint1: 0.0
-          joint2: 0.0
-          joint3: -1.5
-          joint4: 0.0
-          joint5: 1.5
-          joint6: 0.0
+        'joint1': 0.0,
+        'joint2': 0.0,
+        'joint3': 0.0,
+        'joint4': -1.57079632679,
+        'joint5': 0.0,
+        'joint6': 1.57079632679,
+        'joint7': 0.785398163397,
         """
         assert len(joints_positions) == len(self.joint_names), "Wrong number of joints, there should be "+str(len(self.join_names))
         joints_dict = dict(zip(self.joint_names,joints_positions))
@@ -260,7 +260,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
     # ----------------------------
    
         
-# Class that fulfills the Reach movement with MoveIt. (Joseph's move_group_interface has a similar function)
+# Class that fulfills the Reach movement with MoveIt.
 # ----------------------------
 class MoveReach(object):
         # moveit_commander: python interfaces to moveit.
@@ -275,14 +275,13 @@ class MoveReach(object):
         
         self.scene = moveit_commander.PlanningSceneInterface()  
         rospy.logdebug("PlanningSceneInterface initialised...DONE")
-        self.group = moveit_commander.MoveGroupCommander("arm")
+        self.group = moveit_commander.MoveGroupCommander("arm") # arm is the group name, can specify robot_description here.
         rospy.logdebug("MoveGroupCommander for arm initialised...DONE")
 
         
     def ee_traj(self, pose):
         
         self.group.set_pose_target(pose)
-        
         result = self.execute_trajectory()
         
         return result
@@ -308,8 +307,8 @@ class MoveReach(object):
         
     def execute_trajectory(self):
         
-        self.plan = self.group.plan()
-        result = self.group.go(wait=True)
+        self.plan = self.group.plan() # returns a MOTION PLAN.
+        result = self.group.go(wait=True) # set the target of the group and then move the group to the specified target.
         
         return result
 
