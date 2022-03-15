@@ -9,7 +9,7 @@ timestep_limit_per_episode = 1000 # Can be any Value
 register(
         id='PandaReach-v2',
         entry_point='openai_ros.task_envs.reach.reach:ReachEnv',
-        timestep_limit=timestep_limit_per_episode,
+        max_episode_steps=timestep_limit_per_episode
     )
 
 class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
