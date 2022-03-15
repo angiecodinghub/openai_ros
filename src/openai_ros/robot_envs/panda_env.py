@@ -18,6 +18,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         """Initializes a new Panda environment.
         """
         rospy.logdebug("Entered Panda Env")
+        print("entered panda")
         # Variables that we give through the constructor.
 
         # Internal Vars
@@ -275,7 +276,7 @@ class MoveReach(object):
         
         self.scene = moveit_commander.PlanningSceneInterface()  
         rospy.logdebug("PlanningSceneInterface initialised...DONE")
-        self.group = moveit_commander.MoveGroupCommander("arm") # arm is the group name, can specify robot_description here.
+        self.group = moveit_commander.MoveGroupCommander("panda") # arm is the group name, can specify robot_description here.
         rospy.logdebug("MoveGroupCommander for arm initialised...DONE")
 
         

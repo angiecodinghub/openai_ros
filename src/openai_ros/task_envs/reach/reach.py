@@ -32,7 +32,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         print ("Call get_obs")
         obs = self._get_obs()
 
-        self.action_space = spaces.Discrete(number_actions)
+        #self.action_space = spaces.Discrete(number_actions)
         
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
         self.observation_space = spaces.Dict(

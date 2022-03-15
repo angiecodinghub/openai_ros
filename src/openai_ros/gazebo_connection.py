@@ -10,25 +10,25 @@ from geometry_msgs.msg import Vector3
 class GazeboConnection():
 
     def __init__(self, start_init_physics_parameters, reset_world_or_sim, max_retry = 20):
-
+        rospy.logwarn("START Init GazeboConnection")
         self._max_retry = max_retry
         self.unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
         self.pause = rospy.ServiceProxy('/gazebo/pause_physics', Empty)
         self.reset_simulation_proxy = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
         self.reset_world_proxy = rospy.ServiceProxy('/gazebo/reset_world', Empty)
-
         # Setup the Gravity Controle system
         service_name = '/gazebo/set_physics_properties'
         rospy.logdebug("Waiting for service " + str(service_name))
         rospy.wait_for_service(service_name)
-        rospy.logdebug("Service Found " + str(service_name))
-
+        rospy.logdebug("Service Found " + str(service_name)) ### will find service once launching oanda.launch.
         self.set_physics = rospy.ServiceProxy(service_name, SetPhysicsProperties)
         self.start_init_physics_parameters = start_init_physics_parameters
         self.reset_world_or_sim = reset_world_or_sim
         self.init_values()
         # We always pause the simulation, important for legged robots learning
         self.pauseSim()
+        rospy.logwarn("END Init GazeboConnection")
+
 
     def pauseSim(self):
         rospy.logdebug("PAUSING START")
