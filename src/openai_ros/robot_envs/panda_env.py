@@ -113,7 +113,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         ee_target.position.z = action[2]
         
         rospy.logdebug("Set Trajectory EE...START...POSITION="+str(ee_target.position))
-        result = self.move_fetch_object.ee_traj(ee_target)
+        result = self.move_reach_object.ee_traj(ee_target)
         rospy.logdebug("Set Trajectory EE...END...RESULT="+str(result))
         
         return result
@@ -129,7 +129,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         positions_array[5] = initial_qpos["joint6"]
         positions_array[6] = initial_qpos["joint7"]
  
-        self.move_fetch_object.joint_traj(positions_array)
+        self.move_reach_object.joint_traj(positions_array)
         
         return True
         
@@ -180,12 +180,12 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
                 float64 w
         """
         self.gazebo.unpauseSim()
-        gripper_pose = self.move_fetch_object.ee_pose()
+        gripper_pose = self.move_reach_object.ee_pose()
         self.gazebo.pauseSim()
         return gripper_pose
         
     def get_ee_rpy(self):
-        gripper_rpy = self.move_fetch_object.ee_rpy()
+        gripper_rpy = self.move_reach_object.ee_rpy()
         
         return gripper_rpy
         
