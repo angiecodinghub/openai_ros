@@ -276,7 +276,7 @@ class MoveReach(object):
         
         self.scene = moveit_commander.PlanningSceneInterface()  
         rospy.logdebug("PlanningSceneInterface initialised...DONE")
-        self.group = moveit_commander.MoveGroupCommander("panda") # arm is the group name, can specify robot_description here.
+        self.group = moveit_commander.MoveGroupCommander("panda_arm") # arm is the group name, can specify robot_description here.
         rospy.logdebug("MoveGroupCommander for arm initialised...DONE")
 
         
