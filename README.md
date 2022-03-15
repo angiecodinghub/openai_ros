@@ -2,7 +2,7 @@
 
 Execute the following commands:<br>
 `cd ~/ros_ws/src`<br>
-`git clone https://github.com/angiecodinghub/openai_ros.git`<br>
+`git clone https://github.com/angiecodinghub/openai_ros.git src/openai_ros`<br>
 `cd ~/ros_ws`<br>
 `catkin_make`<br>
 `source devel/setup.bash`<br>
