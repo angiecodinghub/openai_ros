@@ -37,9 +37,9 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
         self.observation_space = spaces.Dict(
             dict(
-                observation=spaces.Box(-10.0, 10.0, shape=obs['observation'], dtype=np.float32),
-                desired_goal=spaces.Box(-10.0, 10.0, shape=['achieved_goal'], dtype=np.float32),
-                achieved_goal=spaces.Box(-10.0, 10.0, shape=['desired_goal'], dtype=np.float32),
+                observation=spaces.Box(-10., 10., shape=obs['observation'].shape, dtype=np.float32),
+                desired_goal=spaces.Box(-10., 10., shape=obs['achieved_goal'].shape, dtype=np.float32),
+                achieved_goal=spaces.Box(-10., 10., shape=obs['desired_goal'].shape, dtype=np.float32),
             )
         )
 
@@ -130,16 +130,16 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         # TODO
         grip_pos = self.get_ee_pose() # pose
         grip_pos_array = np.array([grip_pos.pose.position.x, grip_pos.pose.position.y, grip_pos.pose.position.z])
-        
+        print("got ee pose array", grip_pos_array)
         robot_qpos, robot_qvel = self.robot_get_obs(self.joints)
-            
-        gripper_state = robot_qpos[-2:]
-        gripper_vel = robot_qvel[-2:] #* dt  # change to a scalar if the gripper is made symmetric
-
+        print("got ee pose array23")    
+        #gripper_state = robot_qpos[-2:]
+        #gripper_vel = robot_qvel[-2:] #* dt  # change to a scalar if the gripper is made symmetric
+        #print("got ee pose array gggg", gripper_vel) 
         achieved_goal = self._sample_achieved_goal(grip_pos_array)
-            
+        print("got ee pose arrayff g", achieved_goal) 
         obs = np.concatenate([
-            grip_pos_array, gripper_state, gripper_vel,
+            grip_pos_array, #gripper_state, gripper_vel,
         ])
 
         return {
