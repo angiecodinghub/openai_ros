@@ -20,7 +20,7 @@ class GazeboConnection():
         service_name = '/gazebo/set_physics_properties'
         rospy.logdebug("Waiting for service " + str(service_name))
         rospy.wait_for_service(service_name)
-        rospy.logdebug("Service Found " + str(service_name)) ### will find service once launching oanda.launch.
+        rospy.logdebug("Service Found " + str(service_name)) ### will find service once launching panda.launch.
         self.set_physics = rospy.ServiceProxy(service_name, SetPhysicsProperties)
         self.start_init_physics_parameters = start_init_physics_parameters
         self.reset_world_or_sim = reset_world_or_sim
@@ -119,15 +119,15 @@ class GazeboConnection():
         else:
             rospy.logerr("NOT Initialising Simulation Physics Parameters")
 
-    def init_physics_parameters(self):
+    def init_physics_parameters(self): ####  MAY BE BAD. FOLLOW FETCH'S CONFIG.
         """
         We initialise the physics parameters of the simulation, like gravity,
         friction coeficients and so on.
         """
-        self._time_step = Float64(0.001)
+        self._time_step = Float64(0.002) #### 0.001 -> 0.002, as seen in panda-gym pybullet.py
         self._max_update_rate = Float64(1000.0)
 
-        self._gravity = Vector3()
+        self._gravity = Vector3() # correct.
         self._gravity.x = 0.0
         self._gravity.y = 0.0
         self._gravity.z = -9.81
@@ -140,7 +140,7 @@ class GazeboConnection():
         self._ode_config.sor_pgs_rms_error_tol = 0.0
         self._ode_config.contact_surface_layer = 0.001
         self._ode_config.contact_max_correcting_vel = 0.0
-        self._ode_config.cfm = 0.0
+        self._ode_config.cfm = 0.0 ### first to tune?
         self._ode_config.erp = 0.2
         self._ode_config.max_contacts = 20
 

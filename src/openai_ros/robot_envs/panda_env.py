@@ -18,11 +18,10 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         """Initializes a new Panda environment.
         """
         rospy.logdebug("Entered Panda Env")
-        print("entered panda")
         # Variables that we give through the constructor.
 
         # Internal Vars
-        self.controllers_list = ["/franka_state_controller"]
+        self.controllers_list = ["franka_state_controller"]
 
         self.robot_name_space = "" # not sure
 
@@ -52,12 +51,13 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         # Start Services
         self.move_reach_object = MoveReach()
         
-        # Wait until it has reached its Sturtup Position
-        self.wait_reach_ready()
+        # Wait until it has reached its Startup Position ####### probably should keep this.
+        #self.wait_reach_ready()
         
 
         self.gazebo.pauseSim()
         # Variables that we give through the constructor.
+        rospy.logdebug("init Panda Env DONE")
 
 
     # RobotGazeboEnv Virtual Methods
@@ -69,6 +69,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         """
         # TODO
         self._check_all_sensors_ready()
+        rospy.logdebug("ALL SYSTEMS READY")
         return True
     # ----------------------------
 
@@ -76,7 +77,6 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
     # ----------------------------
     def _check_all_sensors_ready(self):
         self._check_joint_states_ready()
-        
         rospy.logdebug("ALL SENSORS READY")
     
     def _check_joint_states_ready(self):
@@ -85,7 +85,27 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
             try:
                 self.joints = rospy.wait_for_message(self.JOINT_STATES_SUBSCRIBER, JointState, timeout=1.0)
                 rospy.logdebug("Current "+str(self.JOINT_STATES_SUBSCRIBER)+" READY=>" + str(self.joints))
-
+                #######
+                #[DEBUG] [1647471371.616565, 0.037000]: Current /joint_states READY=>header: 
+                #  seq: 1
+                #  stamp: 
+                #    secs: 0
+                #    nsecs:  35000000
+                #  frame_id: ''
+                #name: 
+                #  - panda_joint1
+                #  - panda_joint2
+                #  - panda_joint3
+                #  - panda_joint4
+                #  - panda_joint5
+                #  - panda_joint6
+                #  - panda_joint7
+                #  - panda_finger_joint1
+                #  - panda_finger_joint2
+                #position: [-0.02021035531186932, -0.1780145835390119, -0.039891823013486594, -0.39966030614240644, 0.13088714986954653, 0.3093085265609563, 0.1273327860054314, 0.003549732266365417, 0.003549732266365417]
+                #velocity: [-0.010641281198307822, -0.005648077897238885, 0.0027730053015947997, -0.0033547844904800094, 0.0345557937451551, 0.013926294769580575, 0.04140939919748013, 0.3164884045186821, 0.3164884045186821]
+                #effort: [0.00022501934131722166, 2.6700870269835546, 0.14284200898672444, -1.2467790780663113, -0.23962544446798287, -2.472763751677799, 0.0009737094915219322, -4.567237077711568e-05, -4.567237077711568e-05]
+                #######
             except:
                 rospy.logerr("Current "+str(self.JOINT_STATES_SUBSCRIBER)+" not ready yet, retrying....")
         return self.joints
@@ -119,7 +139,9 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         return result
         
     def set_trajectory_joints(self, initial_qpos):
-
+        """
+        set the desired position of each joint, and execute the motion plan.
+        """
         positions_array = [None] * 7
         positions_array[0] = initial_qpos["joint1"]
         positions_array[1] = initial_qpos["joint2"]
@@ -193,22 +215,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         """
         # TODO: Make it wait for this position
         Desired Position to wait for
-        
-        (0.44291739197591884,
-        -0.13691381375054146,
-        -4.498589757905556e-09,
-        0.006635104153645881,
-        0.0018354466563206273,
-        0.0023142971818792546,
-        1.3200059164171716,
-        1.399964660857453,
-        -0.19981518020955402,
-        1.719961735970255,
-        1.0394665737933906e-05, 
-        1.659980987917125,
-        -6.067103113238659e-06,
-        0.05001918351472232,
-        0.050051597253287436)
+        : the init pose.
         """
         import time
         for i in range(20):
@@ -266,18 +273,21 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
 class MoveReach(object):
         # moveit_commander: python interfaces to moveit.
     def __init__(self):
-        rospy.logdebug("In Move Reach Calss init...")
+        rospy.logdebug("In MoveReach init...")
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.logdebug("moveit_commander initialised...")
         
         rospy.logdebug("Starting Robot Commander...")
         self.robot = moveit_commander.RobotCommander()
+        #######
+        #[ WARN] [1647471371.629620353]: Skipping virtual joint 'virtual_joint' because its child frame 'panda_link0' does not match the URDF frame 'world'
+        #######
         rospy.logdebug("Starting Robot Commander...DONE")
         
         self.scene = moveit_commander.PlanningSceneInterface()  
         rospy.logdebug("PlanningSceneInterface initialised...DONE")
-        self.group = moveit_commander.MoveGroupCommander("panda_arm") # arm is the group name, can specify robot_description here.
-        rospy.logdebug("MoveGroupCommander for arm initialised...DONE")
+        self.group = moveit_commander.MoveGroupCommander("panda_arm")
+        rospy.logdebug("MoveGroupCommander for panda_arm initialised...DONE")
 
         
     def ee_traj(self, pose):
@@ -288,11 +298,13 @@ class MoveReach(object):
         return result
         
     def joint_traj(self, positions_array):
-        
+        """
+        set target and excute the motion plan.
+        """
         self.group_variable_values = self.group.get_current_joint_values()
-        rospy.logdebug("Group Vars:")
+        rospy.logdebug("Current Group Vars:")
         rospy.logdebug(self.group_variable_values)
-        rospy.logdebug("Point:")
+        rospy.logdebug("Desired Point:")
         rospy.logdebug(positions_array)
         self.group_variable_values[0] = positions_array[0]
         self.group_variable_values[1] = positions_array[1]
@@ -307,10 +319,14 @@ class MoveReach(object):
         return result
         
     def execute_trajectory(self):
-        
+        """
+        execute the motion plan.
+        """
         self.plan = self.group.plan() # returns a MOTION PLAN.
         result = self.group.go(wait=True) # set the target of the group and then move the group to the specified target.
-        
+        #######
+        # Fail: ABORTED: No motion plan found. No execution attempted.
+        ######3
         return result
 
     def ee_pose(self):

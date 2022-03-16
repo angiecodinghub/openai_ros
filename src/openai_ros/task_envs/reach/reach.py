@@ -18,7 +18,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
     It depends on both the task and on the robot.
     """
     def __init__(self):
-        print("entered Reach Env")
+        rospy.logdebug("entered Reach Env")
         # Only variable needed to be set here
         
         self.get_params()
@@ -26,13 +26,11 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         panda_env.PandaEnv.__init__(self)
         utils.EzPickle.__init__(self)
 
-        print ("Call env setup")
+        print("Call env setup")
         self._env_setup(initial_qpos = self.init_pos)
  
         print ("Call get_obs")
         obs = self._get_obs()
-
-        #self.action_space = spaces.Discrete(number_actions)
         
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
         self.observation_space = spaces.Dict(
@@ -42,6 +40,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
                 achieved_goal=spaces.Box(-10., 10., shape=obs['desired_goal'].shape, dtype=np.float32),
             )
         )
+        rospy.logdebug("Reach Env settings DONE")
 
 
     def get_params(self):
@@ -91,7 +90,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
 
     # RobotGazeboEnv's virtual methods.
     # --------------------------------
-    def _set_init_pose(self):
+    def _set_init_pose(self): ###### THIS DOESN'T WORK.
         """
         Sets the Robot in its init pose
         """
@@ -130,13 +129,17 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         # TODO
         grip_pos = self.get_ee_pose() # pose
         grip_pos_array = np.array([grip_pos.pose.position.x, grip_pos.pose.position.y, grip_pos.pose.position.z])
-        robot_qpos, robot_qvel = self.robot_get_obs(self.joints) 
-        gripper_state = robot_qpos[-1:] # -2, not a good fix tho.
-        gripper_vel = robot_qvel[-2:] #* dt  # change to a scalar if the gripper is made symmetric
+        grip_vel_array = np.array([0., 0., 0.])
+        #robot_qpos, robot_qvel = self.robot_get_obs(self.joints) 
+        # gripper's velocity
+        ##### EE VELOCITY IS NOT ACCESSIBLE IN MOVEIT ########
+        #gripper_state = robot_qpos[-1:] # -2, not a good fix tho.
+        #gripper_vel = robot_qvel[-2:] #* dt  # change to a scalar if the gripper is made symmetric
         #print("got ee pose array gggg", gripper_vel) 
         achieved_goal = self._sample_achieved_goal(grip_pos_array)
         obs = np.concatenate([
-            grip_pos_array, gripper_state, gripper_vel,
+        #    grip_pos_array, gripper_state, gripper_vel,
+            grip_pos_array, grip_vel_array,
         ])
 
         return {
@@ -180,15 +183,15 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         return goal
 
     def _env_setup(self, initial_qpos):
-        print ("Init Pos:", initial_qpos)
+        print("Desired Init Pos:", initial_qpos)
         self.gazebo.unpauseSim()
-        self.set_trajectory_joints(initial_qpos)
+        self.set_trajectory_joints(initial_qpos) ###### THIS SHOULD SET THE ARM IN THE DESIRED POSITION, BUT NO MOTION PLAN FOUND.
 
-        # Move end effector into position.
-        gripper_target = np.array([0.498, 0.005, 0.431 + self.gripper_extra_height])# + self.sim.data.get_site_xpos('robot0:grip')
-        gripper_rotation = np.array([1., 0., 1., 0.])
-        action = np.concatenate([gripper_target, gripper_rotation])
-        self.set_trajectory_ee(action)
+        # Move gripper into position.
+        # gripper_target = np.array([0.498, 0.005, 0.431 + self.gripper_extra_height])# + self.sim.data.get_site_xpos('robot0:grip')
+        # gripper_rotation = np.array([1., 0., 1., 0.])
+        # action = np.concatenate([gripper_target, gripper_rotation])
+        # self.set_trajectory_ee(action)
 
         # Extract information for sampling goals.
         gripper_pos = self.get_ee_pose()
