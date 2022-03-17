@@ -118,9 +118,10 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         action = action.copy()  # ensure action don't change
         action = np.clip(action, self.action_space.low, self.action_space.high)
         ee_displacement = action[:3]
-        rot_ctrl = [1., 0., 1., 0.]
+        rot_ctrl = [1., 0., 1., 0.] ### IS THIS NEEDED?
         action = np.concatenate([ee_displacement, rot_ctrl])
-        self.set_trajectory_ee(action) # Q: does this apply action to simulation???
+        for i in range(self.n_substeps): ######## do this substeps time.
+            self.set_trajectory_ee(action)
 
     def _get_obs(self):
         """
