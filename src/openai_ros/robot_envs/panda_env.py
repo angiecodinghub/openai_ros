@@ -21,9 +21,9 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         # Variables that we give through the constructor.
 
         # Internal Vars
-        self.controllers_list = ["franka_state_controller"]
+        self.controllers_list = ["/effort_joint_trajectory_controller"] # "/franka_state_controller", 
 
-        self.robot_name_space = "" # not sure
+        self.robot_name_space = "panda" # not sure
 
         self.reset_controls = False
         
