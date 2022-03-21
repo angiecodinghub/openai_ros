@@ -34,13 +34,13 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         
         # We Start all the ROS related Subscribers and publishers
         self.JOINT_STATES_SUBSCRIBER = '/joint_states'
-        self.joint_names = ["joint1",
-                          "joint2",
-                          "joint3",
-                          "joint4",
-                          "joint5",
-                          "joint6",
-                          "joint7"]
+        self.joint_names = ["panda_joint1",
+                          "panda_joint2",
+                          "panda_joint3",
+                          "panda_joint4",
+                          "panda_joint5",
+                          "panda_joint6",
+                          "panda_joint7"]
         
         self.gazebo.unpauseSim()
         self._check_all_systems_ready()
@@ -51,8 +51,8 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         # Start Services
         self.move_reach_object = MoveReach()
         
-        # Wait until it has reached its Startup Position ####### probably should keep this.
-        #self.wait_reach_ready()
+        # Wait until it has reached its Startup Position. (IS THIS NEEDED?)
+        # self.wait_reach_ready()
         
 
         self.gazebo.pauseSim()
@@ -84,7 +84,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         while self.joints is None and not rospy.is_shutdown():
             try:
                 self.joints = rospy.wait_for_message(self.JOINT_STATES_SUBSCRIBER, JointState, timeout=1.0)
-                rospy.logdebug("Current "+str(self.JOINT_STATES_SUBSCRIBER)+" READY=>" + str(self.joints))
+                rospy.logdebug("Current "+str(self.JOINT_STATES_SUBSCRIBER)+" READY, joint state msg =>" + str(self.joints))
                 #######
                 #[DEBUG] [1647471371.616565, 0.037000]: Current /joint_states READY=>header: 
                 #  seq: 1
@@ -143,13 +143,13 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         set the desired position of each joint, and execute the motion plan.
         """
         positions_array = [None] * 7
-        positions_array[0] = initial_qpos["joint1"]
-        positions_array[1] = initial_qpos["joint2"]
-        positions_array[2] = initial_qpos["joint3"]
-        positions_array[3] = initial_qpos["joint4"]
-        positions_array[4] = initial_qpos["joint5"]
-        positions_array[5] = initial_qpos["joint6"]
-        positions_array[6] = initial_qpos["joint7"]
+        positions_array[0] = initial_qpos["panda_joint1"]
+        positions_array[1] = initial_qpos["panda_joint2"]
+        positions_array[2] = initial_qpos["panda_joint3"]
+        positions_array[3] = initial_qpos["panda_joint4"]
+        positions_array[4] = initial_qpos["panda_joint5"]
+        positions_array[5] = initial_qpos["panda_joint6"]
+        positions_array[6] = initial_qpos["panda_joint7"]
  
         self.move_reach_object.joint_traj(positions_array)
         
@@ -213,15 +213,13 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         
     def wait_reach_ready(self):
         """
-        # TODO: Make it wait for this position
-        Desired Position to wait for
-        : the init pose.
+        # TODO: Make it wait for the init pose.
         """
         import time
         for i in range(20):
             current_joints = self.get_joints()
             joint_pos = current_joints.position
-            #print("JOINTS POS NOW="+str(joint_pos))
+            print("JOINTS POS NOW="+str(joint_pos))
             print("WAITING..."+str(i))
             time.sleep(1.0)
             

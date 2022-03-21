@@ -26,12 +26,14 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         panda_env.PandaEnv.__init__(self)
         utils.EzPickle.__init__(self)
 
-        print("Call env setup")
+        print("reach env - setup")
         self._env_setup(initial_qpos = self.init_pos)
  
-        print ("Call get_obs")
+        print ("reach env - check obs")
         obs = self._get_obs()
-        
+        rospy.logdebug("current obs:\n")
+        rospy.logdebug(obs)
+
         self.action_space = spaces.Box(-1., 1., shape=(self.n_actions,), dtype='float32')
         self.observation_space = spaces.Dict(
             dict(
@@ -54,13 +56,13 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.reward_type = "sparse"
         self.control_type = "ee" # we only control where the ee is at.
         self.init_pos = {
-            'joint1': 0.0,
-            'joint2': 0.0,
-            'joint3': 0.0,
-            'joint4': -1.57079632679,
-            'joint5': 0.0,
-            'joint6': 1.57079632679,
-            'joint7': 0.785398163397,
+            'panda_joint1': 0.0,
+            'panda_joint2': 0.0,
+            'panda_joint3': 0.0,
+            'panda_joint4': -1.57079632679,
+            'panda_joint5': 0.0,
+            'panda_joint6': 1.57079632679,
+            'panda_joint7': 0.785398163397,
         }
         self.n_substeps = 20
         self.gripper_extra_height = 0.2

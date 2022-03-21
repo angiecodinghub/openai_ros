@@ -59,7 +59,7 @@ class RobotGazeboEnv(gym.Env):
 
     def reset(self):
         """
-        reset the environment.
+        reset the environment. Have to call before step.
         """
         rospy.logdebug("Reseting RobotGazeboEnvironment")
         self._reset_sim()
