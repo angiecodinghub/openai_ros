@@ -3,6 +3,7 @@ from gym.envs.registration import register
 import rospy
 from openai_ros.robot_envs import panda_env
 import numpy as np
+import time
 
 timestep_limit_per_episode = 1000 # Can be any Value
 # register my own environment in gym.
@@ -55,7 +56,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.distance_threshold = 0.05
         self.reward_type = "sparse"
         self.control_type = "ee" # we only control where the ee is at.
-        self.init_pos = {
+        self.init_pos = { # 90 degree bend in the elbow. from panda.launch and franka_gazebo.
             'panda_joint1': 0.0,
             'panda_joint2': 0.0,
             'panda_joint3': 0.0,
@@ -124,6 +125,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         action = np.concatenate([ee_displacement, rot_ctrl])
         for i in range(self.n_substeps): ######## do this substeps time.
             self.set_trajectory_ee(action)
+            time.sleep(2) ##### WAIT FOR 2s
 
     def _get_obs(self):
         """
@@ -188,7 +190,10 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
     def _env_setup(self, initial_qpos):
         print("Desired Init Pos:", initial_qpos)
         self.gazebo.unpauseSim()
+        start = time.time()
         self.set_trajectory_joints(initial_qpos) ###### THIS SHOULD SET THE ARM IN THE DESIRED POSITION, BUT NO MOTION PLAN FOUND.
+        end = time.time()
+        print("env setup execution time:", end - start)
 
         # Move gripper into position.
         # gripper_target = np.array([0.498, 0.005, 0.431 + self.gripper_extra_height])# + self.sim.data.get_site_xpos('robot0:grip')

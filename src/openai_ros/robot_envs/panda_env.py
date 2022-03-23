@@ -271,6 +271,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
 class MoveReach(object):
         # moveit_commander: python interfaces to moveit.
     def __init__(self):
+        
         rospy.logdebug("In MoveReach init...")
         moveit_commander.roscpp_initialize(sys.argv)
         rospy.logdebug("moveit_commander initialised...")

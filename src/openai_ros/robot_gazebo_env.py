@@ -5,6 +5,7 @@ from .gazebo_connection import GazeboConnection
 from .controllers_connection import ControllersConnection
 #https://bitbucket.org/theconstructcore/theconstruct_msgs/src/master/msg/RLExperimentInfo.msg
 from openai_ros.msg import RLExperimentInfo
+import time
 
 # https://github.com/openai/gym/blob/master/gym/core.py
 class RobotGazeboEnv(gym.Env):
@@ -45,7 +46,10 @@ class RobotGazeboEnv(gym.Env):
         rospy.logdebug("START STEP OpenAI ROS")
 
         self.gazebo.unpauseSim()
+        start = time.time()
         self._set_action(action) #### This will change the simulator's pose.
+        done = time.time()
+        print("step set action execution time:", done - start)
         self.gazebo.pauseSim()
         obs = self._get_obs()
         done = self._is_done(obs)
@@ -62,10 +66,12 @@ class RobotGazeboEnv(gym.Env):
         reset the environment. Have to call before step.
         """
         rospy.logdebug("Reseting RobotGazeboEnvironment")
+        print("resetting")
         self._reset_sim()
         self._init_env_variables()
         self._update_episode()
         obs = self._get_obs()
+        print("done resetting")
         rospy.logdebug("END Reseting RobotGazeboEnvironment")
         return obs
 
