@@ -56,7 +56,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.distance_threshold = 0.05
         self.reward_type = "sparse"
         self.control_type = "ee" # we only control where the ee is at.
-        self.init_pos = { # 90 degree bend in the elbow. from panda.launch and franka_gazebo.
+        self.init_pos = { # 90 degree bend in the elbow. from OLD panda.launch in franka_gazebo.
             'panda_joint1': 0.0,
             'panda_joint2': 0.0,
             'panda_joint3': 0.0,
@@ -93,11 +93,10 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
 
     # RobotGazeboEnv's virtual methods.
     # --------------------------------
-    def _set_init_pose(self): ###### THIS DOESN'T WORK.
+    def _set_init_pose(self):
         """
         Sets the Robot in its init pose
         """
-        # TODO
         self.gazebo.unpauseSim()
         self.set_trajectory_joints(self.init_pos)
 
@@ -109,24 +108,56 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         of an episode.
         :return:
         """
-        # TODO
-        pass
+        self.n_actions = 3
+        self.has_object = False
+        self.block_gripper = True
+        self.distance_threshold = 0.05
+        self.reward_type = "sparse"
+        self.control_type = "ee" # we only control where the ee is at.
+        self.init_pos = { # 90 degree bend in the elbow. from OLD panda.launch in franka_gazebo.
+            'panda_joint1': 0.0,
+            'panda_joint2': 0.0,
+            'panda_joint3': 0.0,
+            'panda_joint4': -1.57079632679,
+            'panda_joint5': 0.0,
+            'panda_joint6': 1.57079632679,
+            'panda_joint7': 0.785398163397,
+        }
+        self.n_substeps = 20
+        self.gripper_extra_height = 0.2
+        self.target_in_the_air = True
+        self.target_offset = 0.0
+        self.obj_range = 0.15
+        self.target_range = 0.15
 
     def _set_action(self, action):
         """
         Move the robot based on the action variable given.
         """
-        # TODO: Move robot
         assert action.shape == (3,)
         action = action.copy()  # ensure action don't change
         action = np.clip(action, self.action_space.low, self.action_space.high)
         ee_displacement = action[:3]
-        rot_ctrl = [1., 0., 1., 0.] ### IS THIS NEEDED?
+        #
+        #for i in range(self.n_substeps): ## do the action substeps time.
+        current_obs = self._get_obs()
+        print("current observation:", current_obs['observation'][:3])
+        print("the ee displacement:", ee_displacement)
+        #    next_obs = current_obs['observation'][:3] + ee_displacement
+        ##    print("next observation:", next_obs)
+        print("desired observation:", current_obs['desired_goal'][:3])
+        #    rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
+        #    action = np.concatenate([next_obs, rot_ctrl])
+        #    self.set_trajectory_ee(action)
+        #    time.sleep(2) ##### WAIT FOR 2s
+    
+        rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF QUARTERNIONS.
         action = np.concatenate([ee_displacement, rot_ctrl])
-        for i in range(self.n_substeps): ######## do this substeps time.
-            self.set_trajectory_ee(action)
-            time.sleep(2) ##### WAIT FOR 2s
-
+        #for i in range(self.n_substeps): ## do the action substeps time.
+        self.set_trajectory_ee(action)
+        time.sleep(2) ##### WAIT FOR 2s   
+    
+     
     def _get_obs(self):
         """
         Here we define what sensor data do we want our robot to know.
@@ -157,7 +188,6 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         """
         Decide if episode is done based on the observations
         """
-        # TODO
         if np.linalg.norm(observations['achieved_goal'] - observations['desired_goal'], axis = -1) < self.distance_threshold:
             return True
         else:
@@ -191,7 +221,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         print("Desired Init Pos:", initial_qpos)
         self.gazebo.unpauseSim()
         start = time.time()
-        self.set_trajectory_joints(initial_qpos) ###### THIS SHOULD SET THE ARM IN THE DESIRED POSITION, BUT NO MOTION PLAN FOUND.
+        self.set_trajectory_joints(initial_qpos) ###### THIS SHOULD SET THE ARM IN THE DESIRED POSITION, SUCCEED.
         end = time.time()
         print("env setup execution time:", end - start)
 

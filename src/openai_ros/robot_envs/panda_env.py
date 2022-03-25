@@ -201,9 +201,9 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
                 float64 z
                 float64 w
         """
-        self.gazebo.unpauseSim()
+        #self.gazebo.unpauseSim()
         gripper_pose = self.move_reach_object.ee_pose()
-        self.gazebo.pauseSim()
+        #self.gazebo.pauseSim()
         return gripper_pose
         
     def get_ee_rpy(self):

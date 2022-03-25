@@ -98,7 +98,7 @@ class GazeboConnection():
     def resetSimulation(self):
         rospy.wait_for_service('/gazebo/reset_simulation')
         try:
-            self.reset_simulation_proxy()
+            self.reset_simulation_proxy() ####### WILL HAVE TO CHANGE DEF IN /gazebo/reset_simulation?
         except rospy.ServiceException as e:
             print ("/gazebo/reset_simulation service call failed")
 

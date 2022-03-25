@@ -10,7 +10,7 @@ import time
 # https://github.com/openai/gym/blob/master/gym/core.py
 class RobotGazeboEnv(gym.Env):
 
-    def __init__(self, robot_name_space, controllers_list, reset_controls, start_init_physics_parameters=True, reset_world_or_sim="SIMULATION"):
+    def __init__(self, robot_name_space, controllers_list, reset_controls, start_init_physics_parameters=True, reset_world_or_sim="NO_RESET_SIM"):#reset_world_or_sim: "SIMULATION"
 
         # To reset Simulations
         rospy.logdebug("START init RobotGazeboEnv")
@@ -66,12 +66,11 @@ class RobotGazeboEnv(gym.Env):
         reset the environment. Have to call before step.
         """
         rospy.logdebug("Reseting RobotGazeboEnvironment")
-        print("resetting")
         self._reset_sim()
         self._init_env_variables()
-        self._update_episode()
+        # self._update_episode() # no need to publish reward yet.
         obs = self._get_obs()
-        print("done resetting")
+        print("obs after reseting:", obs)
         rospy.logdebug("END Reseting RobotGazeboEnvironment")
         return obs
 
@@ -137,6 +136,7 @@ class RobotGazeboEnv(gym.Env):
 
         else:
             rospy.logdebug("DONT RESET CONTROLLERS")
+            # check all systems ready and set robot to init pose.
             self.gazebo.unpauseSim()
             self._check_all_systems_ready()
             self._set_init_pose()
