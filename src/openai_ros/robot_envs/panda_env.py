@@ -287,7 +287,8 @@ class MoveReach(object):
         rospy.logdebug("PlanningSceneInterface initialised...DONE")
         self.group = moveit_commander.MoveGroupCommander("panda_arm")
         rospy.logdebug("MoveGroupCommander for panda_arm initialised...DONE")
-
+        self.group.set_planner_id("RRTConnectkConfigDefault") # change planner, defined in panda_moveit_config/ompl_planning.yaml.
+        rospy.logdebug("Set planner...DONE")
         
     def ee_traj(self, pose):
         
