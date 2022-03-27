@@ -331,7 +331,7 @@ class MoveReach(object):
 
     def ee_pose(self):
         
-        gripper_pose = self.group.get_current_pose()
+        gripper_pose = self.group.get_current_pose() ### didn't get the currect pose here.
 
         rospy.logdebug("EE POSE==>"+str(gripper_pose))
 

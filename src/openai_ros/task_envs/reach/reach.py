@@ -137,19 +137,19 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         assert action.shape == (3,)
         action = action.copy()  # ensure action don't change
         action = np.clip(action, self.action_space.low, self.action_space.high)
-        ee_displacement = action[:3]
+        ee_displacement = action[:3] / self.n_substeps
+        current_obs = self._get_obs()
+        print("current observation:", current_obs['observation'][:3])
+        print("raw ee displacement:", action[:3])
+        print("real ee displacement:", ee_displacement)
+        next_obs = current_obs['observation'][:3] + ee_displacement
+        print("next observation:", next_obs)
+        # print("desired observation:", current_obs['desired_goal'][:3])
+        rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
+        action = np.concatenate([next_obs, rot_ctrl])
+        self.set_trajectory_ee(action)
+        time.sleep(1) ##### WAIT FOR 1s      
         #
-        for i in range(self.n_substeps): ## do the action substeps time.
-            current_obs = self._get_obs()
-            print("current observation:", current_obs['observation'][:3])
-            print("the ee displacement:", ee_displacement)
-            next_obs = current_obs['observation'][:3] + ee_displacement
-            print("next observation:", next_obs)
-            # print("desired observation:", current_obs['desired_goal'][:3])
-            rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
-            action = np.concatenate([next_obs, rot_ctrl])
-            self.set_trajectory_ee(action)
-            time.sleep(1) ##### WAIT FOR 1s
         """
         rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF QUARTERNIONS.
         action = np.concatenate([ee_displacement, rot_ctrl])

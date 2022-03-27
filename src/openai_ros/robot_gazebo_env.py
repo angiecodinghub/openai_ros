@@ -50,8 +50,8 @@ class RobotGazeboEnv(gym.Env):
         self._set_action(action) #### This will change the simulator's pose.
         done = time.time()
         print("step set action execution time:", done - start)
-        self.gazebo.pauseSim()
         obs = self._get_obs()
+        self.gazebo.pauseSim() # pause after getting obs so that we can get its states.
         done = self._is_done(obs)
         info = {}
         reward = self._compute_reward(obs, done)
