@@ -133,19 +133,21 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
     def _set_action(self, action):
         """
         Move the robot based on the action variable given.
+        ref: ee_displacement_to_target_arm_angles in panda.py.
         """
         assert action.shape == (3,)
         action = action.copy()  # ensure action don't change
         action = np.clip(action, self.action_space.low, self.action_space.high)
-        ee_displacement = action[:3] / self.n_substeps
+        ee_displacement = action[:3] * 0.05
         current_obs = self._get_obs()
         print("current observation:", current_obs['observation'][:3])
         print("raw ee displacement:", action[:3])
         print("real ee displacement:", ee_displacement)
         next_obs = current_obs['observation'][:3] + ee_displacement
+        next_obs[2] = max(0, next_obs[2])
         print("next observation:", next_obs)
         # print("desired observation:", current_obs['desired_goal'][:3])
-        rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
+        rot_ctrl = [1., 0., 0., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
         action = np.concatenate([next_obs, rot_ctrl])
         self.set_trajectory_ee(action)
         time.sleep(1) ##### WAIT FOR 1s      
