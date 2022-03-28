@@ -151,8 +151,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
             # print("desired observation:", current_obs['desired_goal'][:3])
             rot_ctrl = [1., 0., 0., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
             action = np.concatenate([next_obs, rot_ctrl])
-            self.set_trajectory_ee(action)
-            time.sleep(1) ##### WAIT FOR 1s      
+            self.set_trajectory_ee(action)  
         else: # joint angle.
             assert action.shape == (7,)
             action = action.copy()  # ensure action don't change
@@ -172,7 +171,6 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
             'panda_joint7': float(next_joint[6]),
         }
             self.set_trajectory_joints(joint_degree)
-            time.sleep(1) ##### WAIT FOR 1s
     
      
     def _get_obs(self):
