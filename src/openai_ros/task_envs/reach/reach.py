@@ -18,10 +18,10 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
     This class provides all the context for the reach task we want Panda to learn. 
     It depends on both the task and on the robot.
     """
-    def __init__(self):
+    def __init__(self, control_type="ee"): ## default control_type is ee.
         rospy.logdebug("entered Reach Env")
         # Only variable needed to be set here
-        
+        self.control_type = control_type
         self.get_params()
 
         panda_env.PandaEnv.__init__(self)
@@ -50,12 +50,14 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         """
         Get configuration parameters.
         """
-        self.n_actions = 3
+        if self.control_type == "ee":
+            self.n_actions = 3 # ee position
+        else:
+            self.n_actions = 7 # joint angle.
         self.has_object = False
         self.block_gripper = True
         self.distance_threshold = 0.05
         self.reward_type = "sparse"
-        self.control_type = "ee" # we only control where the ee is at.
         self.init_pos = { # 90 degree bend in the elbow. from OLD panda.launch in franka_gazebo.
             'panda_joint1': 0.0,
             'panda_joint2': 0.0,
@@ -113,7 +115,10 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.block_gripper = True
         self.distance_threshold = 0.05
         self.reward_type = "sparse"
-        self.control_type = "ee" # we only control where the ee is at.
+        if self.control_type == "ee":
+            self.n_actions = 3 # ee position
+        else:
+            self.n_actions = 7 # joint angle.
         self.init_pos = { # 90 degree bend in the elbow. from OLD panda.launch in franka_gazebo.
             'panda_joint1': 0.0,
             'panda_joint2': 0.0,
@@ -135,31 +140,39 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         Move the robot based on the action variable given.
         ref: ee_displacement_to_target_arm_angles in panda.py.
         """
-        assert action.shape == (3,)
-        action = action.copy()  # ensure action don't change
-        action = np.clip(action, self.action_space.low, self.action_space.high)
-        ee_displacement = action[:3] * 0.05
-        current_obs = self._get_obs()
-        print("current observation:", current_obs['observation'][:3])
-        print("raw ee displacement:", action[:3])
-        print("real ee displacement:", ee_displacement)
-        next_obs = current_obs['observation'][:3] + ee_displacement
-        next_obs[2] = max(0, next_obs[2])
-        print("next observation:", next_obs)
-        # print("desired observation:", current_obs['desired_goal'][:3])
-        rot_ctrl = [1., 0., 0., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
-        action = np.concatenate([next_obs, rot_ctrl])
-        self.set_trajectory_ee(action)
-        time.sleep(1) ##### WAIT FOR 1s      
-        #
-        """
-        rot_ctrl = [1., 0., 1., 0.] ### PLACEHOLDER FOR ORIENTATION OF QUARTERNIONS.
-        action = np.concatenate([ee_displacement, rot_ctrl])
-        #for i in range(self.n_substeps): ## do the action substeps time.
-        self.set_trajectory_ee(action)
-        time.sleep(2) ##### WAIT FOR 2s          
-        """
- 
+        if self.control_type == "ee":
+            assert action.shape == (3,)
+            action = action.copy()  # ensure action don't change
+            action = np.clip(action, self.action_space.low, self.action_space.high)
+            ee_displacement = action[:3] * 0.05
+            current_obs = self._get_obs()
+            next_obs = current_obs['observation'][:3] + ee_displacement
+            next_obs[2] = max(0, next_obs[2])
+            # print("desired observation:", current_obs['desired_goal'][:3])
+            rot_ctrl = [1., 0., 0., 0.] ### PLACEHOLDER FOR ORIENTATION OF EE.
+            action = np.concatenate([next_obs, rot_ctrl])
+            self.set_trajectory_ee(action)
+            time.sleep(1) ##### WAIT FOR 1s      
+        else: # joint angle.
+            assert action.shape == (7,)
+            action = action.copy()  # ensure action don't change
+            action = np.clip(action, self.action_space.low, self.action_space.high)
+            joint_displacement = action * 0.05
+            current_joint, _ = self.robot_get_obs(self.joints)# current joint degree
+            next_joint = current_joint[:7] + joint_displacement
+            self.gazebo.unpauseSim()
+            # make joint 
+            joint_degree = {
+            'panda_joint1': float(next_joint[0]),
+            'panda_joint2': float(next_joint[1]),
+            'panda_joint3': float(next_joint[2]),
+            'panda_joint4': float(next_joint[3]),
+            'panda_joint5': float(next_joint[4]),
+            'panda_joint6': float(next_joint[5]),
+            'panda_joint7': float(next_joint[6]),
+        }
+            self.set_trajectory_joints(joint_degree)
+            time.sleep(1) ##### WAIT FOR 1s
     
      
     def _get_obs(self):
