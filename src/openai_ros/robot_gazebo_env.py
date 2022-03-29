@@ -9,7 +9,7 @@ from openai_ros.msg import RLExperimentInfo
 # https://github.com/openai/gym/blob/master/gym/core.py
 class RobotGazeboEnv(gym.Env):
 
-    def __init__(self, robot_name_space, controllers_list, reset_controls, start_init_physics_parameters=True, reset_world_or_sim = "NO_RESET_SIM"):#reset_world_or_sim: "SIMULATION"
+    def __init__(self, robot_name_space, controllers_list, reset_controls, start_init_physics_parameters=True, reset_world_or_sim = "NO_RESET_SIM"):#reset_world_or_sim: "SIMULATION" "NO_RESET_SIM"
         """
         The superclass of all. Includes the definitions of the highest level.
         self.gazebo: connection of gazebo.
@@ -166,4 +166,7 @@ class RobotGazeboEnv(gym.Env):
 
     def _env_setup(self, initial_qpos): # TrainEnv.
         raise NotImplementedError()
+    
+    #def _set_limit(self):
+    #    raise NotImplementedError()
 

@@ -100,6 +100,8 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         :returns: if the plan succeed.
         """
         ee_target = geometry_msgs.msg.Pose()
+        # prevent sending pose that's out of range.
+        # action = np.clip(action, self.position_low, self.position_high)
         ee_target.position.x = action[0]
         ee_target.position.y = action[1]
         ee_target.position.z = action[2]
@@ -128,6 +130,8 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         positions_array[4] = joints_values["panda_joint5"]
         positions_array[5] = joints_values["panda_joint6"]
         positions_array[6] = joints_values["panda_joint7"]
+        # prevent sending joint value that's out of range.
+        positions_array = np.clip(positions_array, [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973], [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 2.8973])
  
         result = self.move_reach_object.joint_traj(positions_array)
         
@@ -209,6 +213,9 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
 
     def _is_done(self, observations):
         raise NotImplementedError()
+
+    #def _set_limit(self):
+    #    raise NotImplementedError()
     # ----------------------------
    
         

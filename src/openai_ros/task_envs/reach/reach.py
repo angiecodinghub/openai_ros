@@ -59,6 +59,7 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
                 achieved_goal=spaces.Box(-10., 10., shape=obs['desired_goal'].shape, dtype=np.float32),
             )
         )
+        #self._set_limit()
         rospy.logdebug("Reach Env init DONE")
 
 
@@ -233,6 +234,12 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
             return -np.array(distance > self.distance_threshold, dtype = np.float64)
         else:
             return -distance
+    
+    #def _set_limit(self):
+    #    self.position_low = self.initial_gripper_pos + [-self.distance_threshold] * len(self.initial_gripper_pos)
+    #    self.position_high = self.initial_gripper_pos + [self.distance_threshold] * len(self.initial_gripper_pos)
+    #    self.joint_low = []
+    #    self.joint_high = []
     # --------------------------------
 
     # internal methods for ReachEnv.
