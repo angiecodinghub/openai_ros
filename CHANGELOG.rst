@@ -1,5 +1,5 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package openai_ros
+Changelog for package franka_gym
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Forthcoming
