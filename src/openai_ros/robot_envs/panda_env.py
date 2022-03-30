@@ -5,6 +5,7 @@ import moveit_commander
 import sys
 import geometry_msgs.msg
 import numpy as np
+import time
 
 class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
     def __init__(self):
@@ -280,9 +281,9 @@ class MoveReach(object):
         execute the motion plan.
         :returns: if the plan succeed.
         """
-        self.plan = self.group.plan() # returns a MOTION PLAN.
-        result = self.group.go(wait=True) # set the target of the group and then move the group to the specified target.
-
+        # self.plan = self.group.plan() # returns a MOTION PLAN. go already plans for us.
+        # slow if wait == True, but it is probably necessary?
+        result = self.group.go(wait = True) # set the target of the group and then move the group to the specified target.
         return result
 
     def ee_pose(self):
