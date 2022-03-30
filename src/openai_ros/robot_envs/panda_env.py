@@ -282,11 +282,8 @@ class MoveReach(object):
         :returns: if the plan succeed.
         """
         # self.plan = self.group.plan() # returns a MOTION PLAN. go already plans for us.
-        # slow if wait == True, but it is probably necessary?
-        start = time.time()
-        result = self.group.go(wait = False) # set the target of the group and then move the group to the specified target.
-        end = time.time()
-        print("TIME:", end - start)
+        # slow if wait == True, but it is probably necessary to set it as True?
+        result = self.group.go(wait = True) # set the target of the group and then move the group to the specified target.
         return result
 
     def ee_pose(self):
