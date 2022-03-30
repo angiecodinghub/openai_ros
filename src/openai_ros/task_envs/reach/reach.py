@@ -5,7 +5,7 @@ from openai_ros.robot_envs import panda_env
 import numpy as np
 import time
 
-timestep_limit_per_episode = 1000
+timestep_limit_per_episode = 50
 
 # register environment in gym.
 register(
