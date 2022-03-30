@@ -203,7 +203,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
     def _init_env_variables(self):
         raise NotImplementedError()
 
-    def _compute_reward(self, observations):
+    def _compute_reward(self, achieved_goal, desired_goal, info):
         raise NotImplementedError()
 
     def _set_action(self, action):
@@ -283,7 +283,10 @@ class MoveReach(object):
         """
         # self.plan = self.group.plan() # returns a MOTION PLAN. go already plans for us.
         # slow if wait == True, but it is probably necessary?
-        result = self.group.go(wait = True) # set the target of the group and then move the group to the specified target.
+        start = time.time()
+        result = self.group.go(wait = False) # set the target of the group and then move the group to the specified target.
+        end = time.time()
+        print("TIME:", end - start)
         return result
 
     def ee_pose(self):

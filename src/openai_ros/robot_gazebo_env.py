@@ -54,7 +54,7 @@ class RobotGazeboEnv(gym.Env):
         self.gazebo.pauseSim() # pause after getting obs so that we can get its states.
         done = self._is_done(obs)
         info = {}
-        reward = self._compute_reward(obs, done)
+        reward = self._compute_reward(obs['achieved_goal'], obs['desired_goal'], info)
         self.cumulated_episode_reward += reward
         rospy.logdebug("END STEP")
 
@@ -161,7 +161,7 @@ class RobotGazeboEnv(gym.Env):
     def _is_done(self, observations): # TrainEnv.
         raise NotImplementedError()
 
-    def _compute_reward(self, observations, done): # TrainEnv.
+    def _compute_reward(self, achieved_goal, desired_goal, info): # TrainEnv.
         raise NotImplementedError()
 
     def _env_setup(self, initial_qpos): # TrainEnv.

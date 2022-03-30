@@ -111,6 +111,8 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
             )
         return np.zeros(0), np.zeros(0)
 
+    def compute_reward(self, achieved_goal, desired_goal, info):
+        return self._compute_reward(achieved_goal, desired_goal, info)
 
     # RobotGazeboEnv's virtual methods.
     # --------------------------------
@@ -220,16 +222,14 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         else:
             return False
 
-    def _compute_reward(self, observations, done):
+    def _compute_reward(self, achieved_goal, desired_goal, info):
         """
         return the reward based on the observations given.
         :param observations: the observations of the state.
         :param done: if the episode is done.
         :returns: the reward.
         """
-        if done:
-            return -0
-        distance = np.linalg.norm(observations['achieved_goal'] - observations['desired_goal'], axis = -1)
+        distance = np.linalg.norm(achieved_goal - desired_goal, axis = -1)
         if self.reward_type == "sparse":
             return -np.array(distance > self.distance_threshold, dtype = np.float64)
         else:
