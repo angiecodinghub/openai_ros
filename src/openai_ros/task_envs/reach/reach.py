@@ -89,7 +89,9 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.target_in_the_air = True
         self.target_offset = 0.0
         self.obj_range = 0.15
-        self.target_range = 0.15
+        # self.target_range = 0.15
+        self.goal_range_low = np.array([-0.15, -0.15, 0])
+        self.goal_range_high = np.array([0.15, 0.15, 0.3])
 
     def robot_get_obs(self, joints):
         """
@@ -153,7 +155,9 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.target_in_the_air = True
         self.target_offset = 0.0
         self.obj_range = 0.15
-        self.target_range = 0.15
+        #self.target_range = 0.15
+        self.goal_range_low = np.array([-0.15, -0.15, 0])
+        self.goal_range_high = np.array([0.15, 0.15, 0.3])
 
     def _set_action(self, action):
         """
@@ -258,7 +262,9 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         sample a goal according to self.target_range.
         :returns: the goal.
         """
-        goal = self.initial_gripper_pos[:3] + self.np_random.uniform(-self.target_range, self.target_range, size = 3)
+        #goal = self.initial_gripper_pos[:3] + self.np_random.uniform(-self.target_range, self.target_range, size = 3)
+        goal = self.initial_gripper_pos[:3] + self.np_random.uniform(self.goal_range_low, self.goal_range_high) 
+        
         return goal
 
     def _env_setup(self, initial_pos):
