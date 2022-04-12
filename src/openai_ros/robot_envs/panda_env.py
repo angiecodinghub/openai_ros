@@ -42,7 +42,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
                           "panda_joint6",
                           "panda_joint7"]
         
-        self.gazebo.unpauseSim()
+        #self.gazebo.unpauseSim()
         self._check_all_systems_ready()
 
         self.joint_states_sub = rospy.Subscriber(self.JOINT_STATES_SUBSCRIBER, JointState, self.joints_callback)
@@ -51,7 +51,7 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         # Start Services
         self.move_reach_object = MoveReach()
         
-        self.gazebo.pauseSim()
+        #self.gazebo.pauseSim()
         rospy.logdebug("Panda Env init DONE")
 
 
@@ -245,7 +245,9 @@ class MoveReach(object):
         rospy.logdebug("MoveGroupCommander for panda_arm initialised...DONE")
         self.group.set_planner_id("RRTConnectkConfigDefault") # the planners are defined in panda_moveit_config/ompl_planning.yaml.
         rospy.logdebug("Set planner...DONE")
-        
+        self.group.set_max_acceleration_scaling_factor(0.1)
+        self.group.set_max_velocity_scaling_factor(0.1)
+
     def ee_traj(self, pose):
         """
         set target end effector pose and execute the motion plan.

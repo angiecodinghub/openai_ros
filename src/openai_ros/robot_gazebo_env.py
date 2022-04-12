@@ -21,7 +21,7 @@ class RobotGazeboEnv(gym.Env):
         """
         # To reset Simulations
         rospy.logdebug("START init RobotGazeboEnv")
-        self.gazebo = GazeboConnection(start_init_physics_parameters,reset_world_or_sim)
+        # self.gazebo = GazeboConnection(start_init_physics_parameters,reset_world_or_sim)
         self.controllers_object = ControllersConnection(namespace = robot_name_space, controllers_list = controllers_list) ### set controller and namespace here.
         self.reset_controls = reset_controls
         self.seed()
@@ -48,10 +48,10 @@ class RobotGazeboEnv(gym.Env):
         """
         rospy.logdebug("START STEP")
 
-        self.gazebo.unpauseSim()
+        #self.gazebo.unpauseSim()
         self._set_action(action) #### This will change the simulator's pose.
         obs = self._get_obs()
-        self.gazebo.pauseSim() # pause after getting obs so that we can get its states.
+        #self.gazebo.pauseSim() # pause after getting obs so that we can get its states.
         done = self._is_done(obs)
         info = {}
         reward = self._compute_reward(obs['achieved_goal'], obs['desired_goal'], info)
@@ -115,27 +115,28 @@ class RobotGazeboEnv(gym.Env):
         if self.reset_controls :
             rospy.logdebug("RESET CONTROLLERS")
             # reset controllers, check all systems ready and set robot to init pose.
-            self.gazebo.unpauseSim()
+            #self.gazebo.unpauseSim()
             self.controllers_object.reset_controllers()
             self._check_all_systems_ready()
             self._set_init_pose()
-            self.gazebo.pauseSim()
-            self.gazebo.resetSim()
-            self.gazebo.unpauseSim()
+            #self.gazebo.pauseSim()
+            #self.gazebo.resetSim()
+            #self.gazebo.unpauseSim()
             self.controllers_object.reset_controllers()
             self._check_all_systems_ready()
-            self.gazebo.pauseSim()
+            #self.gazebo.pauseSim()
         else:
             rospy.logdebug("DONT RESET CONTROLLERS")
             # check all systems ready and set robot to init pose.
-            self.gazebo.unpauseSim()
+            #self.gazebo.unpauseSim()
             self._check_all_systems_ready()
             self._set_init_pose()
-            self.gazebo.pauseSim()
-            self.gazebo.resetSim()
-            self.gazebo.unpauseSim()
+            #self.gazebo.pauseSim()
+            #self.gazebo.resetSim()
+            
+            #self.gazebo.unpauseSim()
             self._check_all_systems_ready()
-            self.gazebo.pauseSim()
+            #self.gazebo.pauseSim()
 
         rospy.logdebug("RESET SIM END")
         return True
