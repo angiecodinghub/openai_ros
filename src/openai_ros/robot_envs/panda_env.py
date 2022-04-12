@@ -134,8 +134,8 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         positions_array[5] = joints_values["panda_joint6"]
         positions_array[6] = joints_values["panda_joint7"]
         # prevent sending joint value that's out of range.
-        positions_array = np.clip(positions_array, [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973], [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 2.8973])
- 
+        # positions_array = np.clip(positions_array, [-2.8973, -1.7628, -2.8973, -3.0718, -2.8973, -0.0175, -2.8973], [2.8973, 1.7628, 2.8973, -0.0698, 2.8973, 3.7525, 2.8973])
+        positions_array = np.clip(positions_array, [-0.5794, -0.7853, -0.5794, -3.0718, -2.8973, -0.0175, -2.8973], [0.5794, 0.7853, 0.5794, -0.0698, 2.8973, 3.7525, 2.8973])
         result = self.move_reach_object.joint_traj(positions_array)
         
         return result
