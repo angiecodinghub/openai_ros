@@ -9,7 +9,7 @@ from openai_ros.msg import RLExperimentInfo
 # https://github.com/openai/gym/blob/master/gym/core.py
 class RobotGazeboEnv(gym.Env):
 
-    def __init__(self, robot_name_space, controllers_list, reset_controls, start_init_physics_parameters=True, reset_world_or_sim = "NO_RESET_SIM"):#reset_world_or_sim: "SIMULATION" "NO_RESET_SIM"
+    def __init__(self, robot_name_space, controllers_list, reset_controls, start_init_physics_parameters=True, reset_world_or_sim = "NO_RESET_SIM", robot_type="gazebo"):#reset_world_or_sim: "SIMULATION" "NO_RESET_SIM"
         """
         The superclass of all. Includes the definitions of the highest level.
         self.gazebo: connection of gazebo.
@@ -21,10 +21,13 @@ class RobotGazeboEnv(gym.Env):
         """
         # To reset Simulations
         rospy.logdebug("START init RobotGazeboEnv")
-        # self.gazebo = GazeboConnection(start_init_physics_parameters,reset_world_or_sim)
+        self.robot_type = robot_type
+        if self.robot_type == "gazebo":
+            self.gazebo = GazeboConnection(start_init_physics_parameters,reset_world_or_sim)
         self.controllers_object = ControllersConnection(namespace = robot_name_space, controllers_list = controllers_list) ### set controller and namespace here.
         self.reset_controls = reset_controls
         self.seed()
+        
 
         self.episode_num = 0
         self.cumulated_episode_reward = 0
@@ -47,11 +50,12 @@ class RobotGazeboEnv(gym.Env):
         :returns: obs, reward, done, info.
         """
         rospy.logdebug("START STEP")
-
-        #self.gazebo.unpauseSim()
+        if self.robot_type == "gazebo":
+            self.gazebo.unpauseSim()
         self._set_action(action) #### This will change the simulator's pose.
         obs = self._get_obs()
-        #self.gazebo.pauseSim() # pause after getting obs so that we can get its states.
+        if self.robot_type == "gazebo":
+            self.gazebo.pauseSim() # pause after getting obs so that we can get its states.
         done = self._is_done(obs)
         info = {}
         reward = self._compute_reward(obs['achieved_goal'], obs['desired_goal'], info)
@@ -115,28 +119,33 @@ class RobotGazeboEnv(gym.Env):
         if self.reset_controls :
             rospy.logdebug("RESET CONTROLLERS")
             # reset controllers, check all systems ready and set robot to init pose.
-            #self.gazebo.unpauseSim()
+            if self.robot_type == "gazebo":
+                self.gazebo.unpauseSim()
             self.controllers_object.reset_controllers()
             self._check_all_systems_ready()
             self._set_init_pose()
-            #self.gazebo.pauseSim()
-            #self.gazebo.resetSim()
-            #self.gazebo.unpauseSim()
+            if self.robot_type == "gazebo":
+                self.gazebo.pauseSim()
+                self.gazebo.resetSim()
+                self.gazebo.unpauseSim()
             self.controllers_object.reset_controllers()
             self._check_all_systems_ready()
-            #self.gazebo.pauseSim()
+            if self.robot_type == "gazebo":
+                self.gazebo.pauseSim()
         else:
             rospy.logdebug("DONT RESET CONTROLLERS")
             # check all systems ready and set robot to init pose.
-            #self.gazebo.unpauseSim()
+            if self.robot_type == "gazebo":
+                self.gazebo.unpauseSim()
             self._check_all_systems_ready()
             self._set_init_pose()
-            #self.gazebo.pauseSim()
-            #self.gazebo.resetSim()
-            
-            #self.gazebo.unpauseSim()
+            if self.robot_type == "gazebo":
+                self.gazebo.pauseSim()
+                self.gazebo.resetSim()
+                self.gazebo.unpauseSim()
             self._check_all_systems_ready()
-            #self.gazebo.pauseSim()
+            if self.robot_type == "gazebo":
+                self.gazebo.pauseSim()
 
         rospy.logdebug("RESET SIM END")
         return True

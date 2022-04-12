@@ -34,13 +34,13 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
     self.observation_space: the observation space.
     self.initial_gripper_pos: initial gripper position.
     """
-    def __init__(self, control_type="ee"): ## default control_type is ee.
+    def __init__(self, control_type = "ee", robot_type = "gazebo"): ## default control_type is ee. default robot is gazebo.
         rospy.logdebug("entered Reach Env")
         # set params.
         self.control_type = control_type
         self.get_params()
 
-        panda_env.PandaEnv.__init__(self)
+        panda_env.PandaEnv.__init__(self, robot_type)
         utils.EzPickle.__init__(self)
 
         rospy.logdebug("reach env - setup")
@@ -123,7 +123,8 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         sets Panda in its init pose.
         :returns: if the plan succeed.
         """
-        #self.gazebo.unpauseSim()
+        if self.robot_type == "gazebo":
+            self.gazebo.unpauseSim()
         result = self.set_trajectory_joints(self.init_pos)
 
         return result
@@ -272,7 +273,8 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         setup the init pose of the robot and the gripper, and set a goal.
         :param initial_pos: initial pose of the joints.
         """
-        #self.gazebo.unpauseSim()
+        if self.robot_type == "gazebo":
+            self.gazebo.unpauseSim()
         self.set_trajectory_joints(initial_pos)
 
         # get the position of the end effector.

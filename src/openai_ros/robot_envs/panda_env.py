@@ -8,7 +8,7 @@ import numpy as np
 import time
 
 class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
-    def __init__(self):
+    def __init__(self, robot_type = "gazebo"):
         """
         initializes a new Panda environment. This class contain all the ROS functionalities that 
         your robot will need in order to be controlled. 
@@ -26,11 +26,12 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         self.controllers_list = ["/position_joint_trajectory_controller"]
         self.robot_name_space = "panda"
         self.reset_controls = False
-        
+
         # We launch the init function of the Parent Class robot_gazebo_env.RobotGazeboEnv
         super(PandaEnv, self).__init__(controllers_list  = self.controllers_list,
                                                 robot_name_space = self.robot_name_space,
-                                                reset_controls = self.reset_controls)
+                                                reset_controls = self.reset_controls,
+                                                robot_type = robot_type)
         
         # We Start all the ROS related Subscribers and publishers
         self.JOINT_STATES_SUBSCRIBER = '/joint_states'
@@ -42,7 +43,8 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
                           "panda_joint6",
                           "panda_joint7"]
         
-        #self.gazebo.unpauseSim()
+        if self.robot_type == "gazebo":
+            self.gazebo.unpauseSim()
         self._check_all_systems_ready()
 
         self.joint_states_sub = rospy.Subscriber(self.JOINT_STATES_SUBSCRIBER, JointState, self.joints_callback)
@@ -50,8 +52,8 @@ class PandaEnv(robot_gazebo_env.RobotGazeboEnv):
         
         # Start Services
         self.move_reach_object = MoveReach()
-        
-        #self.gazebo.pauseSim()
+        if self.robot_type == "gazebo":
+            self.gazebo.pauseSim()
         rospy.logdebug("Panda Env init DONE")
 
 
