@@ -246,9 +246,10 @@ class MoveReach(object):
         self.group = moveit_commander.MoveGroupCommander("panda_arm")
         rospy.logdebug("MoveGroupCommander for panda_arm initialised...DONE")
         self.group.set_planner_id("RRTConnectkConfigDefault") # the planners are defined in panda_moveit_config/ompl_planning.yaml.
-        rospy.logdebug("Set planner...DONE")
+        rospy.logdebug("Set scaling factor")
         self.group.set_max_acceleration_scaling_factor(0.1)
         self.group.set_max_velocity_scaling_factor(0.1)
+        rospy.logdebug("Set planner...DONE")
 
     def ee_traj(self, pose):
         """
@@ -285,7 +286,7 @@ class MoveReach(object):
         execute the motion plan.
         :returns: if the plan succeed.
         """
-        # self.plan = self.group.plan() # returns a MOTION PLAN. go already plans for us.
+        self.plan = self.group.plan() # returns a MOTION PLAN. go already plans for us.
         # slow if wait == True, but it is probably necessary to set it as True?
         result = self.group.go(wait = True) # set the target of the group and then move the group to the specified target.
         return result

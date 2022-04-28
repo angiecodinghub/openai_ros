@@ -5,7 +5,7 @@ from openai_ros.robot_envs import panda_env
 import numpy as np
 import time
 
-timestep_limit_per_episode = 50
+timestep_limit_per_episode = 20
 
 # register environment in gym.
 register(
@@ -90,8 +90,8 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.target_offset = 0.0
         self.obj_range = 0.15
         # self.target_range = 0.15
-        self.goal_range_low = np.array([-0.15, -0.15, 0])
-        self.goal_range_high = np.array([0.15, 0.15, 0.3])
+        self.goal_range_low = np.array([-0.15, -0.15, -0.15])
+        self.goal_range_high = np.array([0.15, 0.15, 0])
 
     def robot_get_obs(self, joints):
         """
@@ -133,15 +133,14 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         """
         init environment variables.
         """
-        self.n_actions = 3
-        self.has_object = False
-        self.block_gripper = True
-        self.distance_threshold = 0.05
-        self.reward_type = "sparse"
         if self.control_type == "ee":
             self.n_actions = 3 # ee position
         else:
             self.n_actions = 7 # joint angle.
+        self.has_object = False
+        self.block_gripper = True
+        self.distance_threshold = 0.05
+        self.reward_type = "sparse"
         self.init_pos = { # 90 degree bend in the elbow. from OLD panda.launch in franka_gazebo.
             'panda_joint1': 0.0,
             'panda_joint2': 0.0,
@@ -157,8 +156,8 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         self.target_offset = 0.0
         self.obj_range = 0.15
         #self.target_range = 0.15
-        self.goal_range_low = np.array([-0.15, -0.15, 0])
-        self.goal_range_high = np.array([0.15, 0.15, 0.3])
+        self.goal_range_low = np.array([-0.15, -0.15, -0.15])
+        self.goal_range_high = np.array([0.15, 0.15, 0])
 
     def _set_action(self, action):
         """
@@ -263,7 +262,8 @@ class ReachEnv(panda_env.PandaEnv, utils.EzPickle):
         sample a goal according to self.target_range.
         :returns: the goal.
         """
-        #goal = self.initial_gripper_pos[:3] + self.np_random.uniform(-self.target_range, self.target_range, size = 3)
+        #goal = self.initial_gripper_pos[:3] + self.np_random.uniform(-self.target_range, self.target_range, size = 3)\
+        print("init grip:", self.initial_gripper_pos)
         goal = self.initial_gripper_pos[:3] + self.np_random.uniform(self.goal_range_low, self.goal_range_high) 
         
         return goal
