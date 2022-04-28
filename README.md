@@ -19,7 +19,7 @@ Execute the following commands:<br>
 1. Reach: <br>
 The goal is to let the end effector of the robot reach a certain location in the space. 
 * gripper: blocked. 
-* maximum step per episode: 50.
+* maximum step per episode: 20.
 * init position: 90 degrees at its elbow: <br>
             {'panda_joint1': 0.0, <br>
             'panda_joint2': 0.0, <br>
@@ -31,6 +31,9 @@ The goal is to let the end effector of the robot reach a certain location in the
 * control types: <br>
 "ee": learn the displacement of the end effector. <br>
 "joint": learn the displacement (of angles) of the 7 joints.
+* robot types: <br>
+"gazebo": simulator in gazebo. <br>
+"robot": physical robot.
 
 ## Contact Info
 
